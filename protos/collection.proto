@@ -1,0 +1,31 @@
+syntax = "proto3";
+
+package collection;
+
+option go_package = "github.com/RexGreenway/CollectionApp/internal/genproto";
+
+import "google/protobuf/wrappers.proto";
+
+message Collection {
+    string id = 1;
+    string name = 2;
+
+    // Collection of Items (can be repeated zero or more times)
+    repeated Item items = 3;
+}
+
+message Item {
+    string id = 1;
+    string name = 2;
+
+    // This is where the sub item specific data is stored
+    map<string, string> info = 3;
+}
+
+service CollectionService {
+    // Collection Management
+    rpc GetCollection(google.protobuf.StringValue) returns (Collection) {};
+
+    // Item Management
+    rpc AddItem(Item) returns (Item) {};
+}
