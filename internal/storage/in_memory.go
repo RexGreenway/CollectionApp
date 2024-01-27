@@ -4,42 +4,40 @@ import (
 	"errors"
 
 	"github.com/RexGreenway/CollectionApp/internal/entities"
-	"github.com/RexGreenway/CollectionApp/internal/entities/items"
 )
 
-var INMEM StorageType = "in_memory"
+const InMemory StorageType = "in_memory"
 
-// ???
+// inMemoryStorage ???
 type inMemoryStorage struct {
-	store map[string]entities.Collection[items.Item]
+	store map[string]entities.Collection
 }
 
-func newInMemoryStorage() (inMemoryStorage, error) {
-	return inMemoryStorage{
-		store: map[string]entities.Collection[items.Item]{},
-	}, nil
+// NewInMemoryStorage ???
+func NewInMemoryStorage() (inMemoryStorage, error) {
+	return inMemoryStorage{store: map[string]entities.Collection{}}, nil
 }
 
-func (s inMemoryStorage) CreateCollection(
-	collection entities.Collection[items.Item],
-) error {
+// CreateCollection ???
+func (s inMemoryStorage) CreateCollection(collection entities.Collection) error {
+	if _, ok := s.store[collection.ID]; ok {
+		return errors.New("collection already exists")
+	}
 	s.store[collection.ID] = collection
 	return nil
 }
 
-func (s inMemoryStorage) GetCollection(
-	collectionID string,
-) (entities.Collection[items.Item], error) {
-	if collection, ok := s.store[collectionID]; !ok {
-		return entities.Collection[items.Item]{}, errors.New("not found")
-	} else {
-		return collection, nil
+// GetCollection ???
+func (s inMemoryStorage) GetCollection(collectionID string) (entities.Collection, error) {
+	collection, ok := s.store[collectionID]
+	if !ok {
+		return entities.Collection{}, errors.New("collection not found")
 	}
+	return collection, nil
 }
 
-func (s inMemoryStorage) UpdateCollection(
-	collection entities.Collection[items.Item],
-) error {
+// UpdateCollection ???
+func (s inMemoryStorage) UpdateCollection(collection entities.Collection) error {
 	if _, ok := s.store[collection.ID]; !ok {
 		return errors.New("collection not found")
 	}
@@ -47,6 +45,7 @@ func (s inMemoryStorage) UpdateCollection(
 	return nil
 }
 
+// DeleteCollection ???
 func (s inMemoryStorage) DeleteCollection(collectionID string) error {
 	if _, ok := s.store[collectionID]; !ok {
 		return errors.New("collection not found")

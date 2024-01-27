@@ -7,35 +7,41 @@ import (
 	"github.com/RexGreenway/CollectionApp/internal/entities/items"
 )
 
-// NOTE: Does the concept of a collection need an interface?
-
-// Collection defines a struct defining a collection of items of the same type.
-type Collection[I items.Item] struct {
-	// Collection related fields
+// Collection defines a container for "collectable" Items with a unique ID and
+// a name. Collections only contain Items of a single type stored as a map of
+// IDs to Items.
+//
+// Note: Multi-'item type' collections could be possible in the future.
+type Collection struct {
 	ID   string `json:"id"`
 	Name string `json:"name"`
 
 	// Contained Item related fields
-	Items    map[string]I   `json:"items"`
-	ItemType items.ItemType `json:"item_type"`
+	Items    map[string]items.Item `json:"items"`
+	ItemType items.ItemType        `json:"item_type"`
 }
 
-// String implements the stringer interface.
-func (c Collection[I]) String() string {
-	return fmt.Sprintf("Collection: %v", c.Name)
+// String implements the stringer interface returning the Collection name.
+func (c Collection) String() string {
+	return fmt.Sprintf("%s Collection", c.Name)
 }
 
-// ??? Getters should not be on pointers and return errors
-// (Should define custom errors too)
-func (c Collection[I]) GetItem(itemID string) (item I, err error) {
+// GetItem returns a "collectable" from a collection if it exists.
+func (c Collection) GetItem(itemID string) (items.Item, error) {
 	item, ok := c.Items[itemID]
 	if !ok {
-		err = errors.New("item not found")
+		// TODO: define custom errors.
+		return nil, errors.New("item not found")
 	}
-	return
+	return item, nil
 }
 
-// ??? Setters should be on pointers
-func (c *Collection[I]) Add(items ...I) error {
+// AddItem adds a non-preexisting "collectible" Item to a collection.
+func (c *Collection) AddItem(item items.Item) error {
+	itemID := item.GetID()
+	if _, ok := c.Items[itemID]; ok {
+		return errors.New("item already exists")
+	}
+	c.Items[itemID] = item
 	return nil
 }
