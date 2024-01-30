@@ -3,17 +3,9 @@ import { useRef, useEffect, useState } from "react";
 import * as d3 from "d3";
 import { SimulationNodeDatum } from "d3";
 
-// Interface Node has...
-interface Node {
-  radius: () => number;
+interface Node extends SimulationNodeDatum {
+  radius: number;
 }
-
-// Extends the Node type used in simulations
-export type CollectionType = {
-  id: number;
-  name: string;
-  items: object[];
-} & SimulationNodeDatum;
 
 // Bubble defines a function creating a bubble
 // Change accepted children type to interface such that Bubble accepts
@@ -21,12 +13,7 @@ export type CollectionType = {
 const Bubble = ({ children }: { children: Node[] }) => {
   const ref = useRef(null);
 
-  const data = children.map((c) => {
-    const col: CollectionType = { id: c.id, name: c.name, items: c.items };
-    return col;
-  });
-
-  const [nodes, SetCol] = useState<CollectionType[]>(data);
+  const [nodes, SetCol] = useState<Node[]>(children);
 
   // D3 BUBBLE
   const width = 800;
@@ -42,13 +29,8 @@ const Bubble = ({ children }: { children: Node[] }) => {
 
   const Add = () => {
     const temp = nodes.map((d) => ({ ...d }));
-    SetCol(
-      temp.concat({
-        id: 5,
-        name: "Beanie Babies",
-        items: [{ name: "bb-0" }, { name: "bb-1" }],
-      })
-    );
+    const addThis = { id: 99, radius: 4 };
+    SetCol(temp.concat(addThis));
   };
 
   useEffect(() => {
@@ -63,14 +45,12 @@ const Bubble = ({ children }: { children: Node[] }) => {
       // Force for 'border' of nodes creates collisions
       .force(
         "collide",
-        d3
-          .forceCollide<CollectionType>((d) => r * d.items.length + 2)
-          .iterations(12)
+        d3.forceCollide<Node>((d) => r * d.radius + 2).iterations(12)
       )
       // Inter-node gravity
       .force(
         "charge",
-        d3.forceManyBody<CollectionType>().strength((d) => r * d.items.length)
+        d3.forceManyBody<Node>().strength((d) => r * d.radius)
       )
       // Tick function of simulation
       .on("tick", ticked);
@@ -94,7 +74,7 @@ const Bubble = ({ children }: { children: Node[] }) => {
             enter
               .transition()
               .duration(500)
-              .attr("r", (d) => r * d.items.length)
+              .attr("r", (d) => r * d.radius)
           ),
         (update) => update,
         (exit) => exit.transition().duration(500).attr("r", 0).remove()
@@ -105,7 +85,7 @@ const Bubble = ({ children }: { children: Node[] }) => {
     function ticked() {
       node.attr("cx", (d) => d.x!).attr("cy", (d) => d.y!);
     }
-  }, [nodes]);
+  }, [nodes, children]);
 
   return (
     <>

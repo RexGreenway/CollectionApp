@@ -4,15 +4,13 @@ export class CollectionNode {
   id: number;
   name: string;
   items: object[];
+  radius: number;
 
   constructor(id: number, name: string, items: object[]) {
     this.id = id;
     this.name = name;
     this.items = items;
-  }
-
-  radius() {
-    return this.items.length;
+    this.radius = items.length;
   }
 }
 
@@ -36,33 +34,36 @@ export default function Collection() {
       { name: "bb-0" },
       { name: "bb-1" },
     ]),
-    new CollectionNode(2, "Generic", [
+    new CollectionNode(6, "Generic", [
       { name: "gen-0" },
       { name: "gen-1" },
       { name: "gen-2" },
     ]),
-    new CollectionNode(3, "Stamps", [{ name: "stamp-0" }, { name: "stamp-1" }]),
-    new CollectionNode(4, "Coins", [
+    new CollectionNode(7, "Stamps", [{ name: "stamp-0" }, { name: "stamp-1" }]),
+    new CollectionNode(8, "Coins", [
       { name: "coin-0" },
       { name: "coin-1" },
       { name: "coin-2" },
     ]),
-    new CollectionNode(5, "Beanie Babies", [
+    new CollectionNode(9, "Beanie Babies", [
       { name: "bb-0" },
       { name: "bb-1" },
     ]),
-    new CollectionNode(2, "Generic", [
+    new CollectionNode(10, "Generic", [
       { name: "gen-0" },
       { name: "gen-1" },
       { name: "gen-2" },
     ]),
-    new CollectionNode(3, "Stamps", [{ name: "stamp-0" }, { name: "stamp-1" }]),
-    new CollectionNode(4, "Coins", [
+    new CollectionNode(11, "Stamps", [
+      { name: "stamp-0" },
+      { name: "stamp-1" },
+    ]),
+    new CollectionNode(12, "Coins", [
       { name: "coin-0" },
       { name: "coin-1" },
       { name: "coin-2" },
     ]),
-    new CollectionNode(5, "Beanie Babies", [
+    new CollectionNode(13, "Beanie Babies", [
       { name: "bb-0" },
       { name: "bb-1" },
     ]),
