@@ -1,99 +1,32 @@
-import * as d3 from "d3";
-import { SimulationNodeDatum } from "d3";
 import { useRef, useEffect, useState } from "react";
 
+import * as d3 from "d3";
+import { SimulationNodeDatum } from "d3";
+
+// Interface Node has...
+interface Node {
+  radius: () => number;
+}
+
 // Extends the Node type used in simulations
-type Collection = {
+export type CollectionType = {
   id: number;
   name: string;
   items: object[];
 } & SimulationNodeDatum;
 
 // Bubble defines a function creating a bubble
-const Bubble = () => {
+// Change accepted children type to interface such that Bubble accepts
+// generalised node children.
+const Bubble = ({ children }: { children: Node[] }) => {
   const ref = useRef(null);
 
-  // Get Collection Data (temp data here but API call later)
-  const data: Collection[] = [
-    {
-      id: 0,
-      name: "Films",
-      items: [{ name: "film-0" }, { name: "film-1" }],
-    },
-    {
-      id: 1,
-      name: "Comics",
-      items: [{ name: "comic-0" }],
-    },
-    {
-      id: 2,
-      name: "Generic",
-      items: [{ name: "gen-0" }, { name: "gen-1" }, { name: "gen-2" }],
-    },
-    {
-      id: 3,
-      name: "Stamps",
-      items: [{ name: "stamp-0" }, { name: "stamp-1" }],
-    },
+  const data = children.map((c) => {
+    const col: CollectionType = { id: c.id, name: c.name, items: c.items };
+    return col;
+  });
 
-    {
-      id: 4,
-      name: "Coins",
-      items: [{ name: "coin-0" }, { name: "coin-1" }, { name: "coin-2" }],
-    },
-
-    {
-      id: 5,
-      name: "Beanie Babies",
-      items: [{ name: "bb-0" }, { name: "bb-1" }],
-    },
-    {
-      id: 2,
-      name: "Generic",
-      items: [{ name: "gen-0" }, { name: "gen-1" }, { name: "gen-2" }],
-    },
-    {
-      id: 3,
-      name: "Stamps",
-      items: [{ name: "stamp-0" }, { name: "stamp-1" }],
-    },
-
-    {
-      id: 4,
-      name: "Coins",
-      items: [{ name: "coin-0" }, { name: "coin-1" }, { name: "coin-2" }],
-    },
-
-    {
-      id: 5,
-      name: "Beanie Babies",
-      items: [{ name: "bb-0" }, { name: "bb-1" }],
-    },
-    {
-      id: 2,
-      name: "Generic",
-      items: [{ name: "gen-0" }, { name: "gen-1" }, { name: "gen-2" }],
-    },
-    {
-      id: 3,
-      name: "Stamps",
-      items: [{ name: "stamp-0" }, { name: "stamp-1" }],
-    },
-
-    {
-      id: 4,
-      name: "Coins",
-      items: [{ name: "coin-0" }, { name: "coin-1" }, { name: "coin-2" }],
-    },
-
-    {
-      id: 5,
-      name: "Beanie Babies",
-      items: [{ name: "bb-0" }, { name: "bb-1" }],
-    },
-  ];
-
-  const [nodes, SetCol] = useState<Collection[]>(data);
+  const [nodes, SetCol] = useState<CollectionType[]>(data);
 
   // D3 BUBBLE
   const width = 800;
@@ -131,13 +64,13 @@ const Bubble = () => {
       .force(
         "collide",
         d3
-          .forceCollide<Collection>((d) => r * d.items.length + 2)
+          .forceCollide<CollectionType>((d) => r * d.items.length + 2)
           .iterations(12)
       )
       // Inter-node gravity
       .force(
         "charge",
-        d3.forceManyBody<Collection>().strength((d) => r * d.items.length)
+        d3.forceManyBody<CollectionType>().strength((d) => r * d.items.length)
       )
       // Tick function of simulation
       .on("tick", ticked);

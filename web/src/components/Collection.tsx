@@ -1,20 +1,72 @@
-const Item = ({ children }: { children: string }) => {
-  return <h3>{children}</h3>;
-};
+import Bubble from "./Bubble";
 
-export default function Collection() {
-  const collection = [
-    { ID: "1", Name: "test-film-1", Year: 1990 },
-    { ID: "2", Name: "test-film-2", Year: 1999 },
-    { ID: "3", Name: "test-film-3", Year: 2009 },
-    { ID: "4", Name: "test-film-4", Year: 2020 },
-    { ID: "5", Name: "test-film-5", Year: 3005 },
-  ];
+export class CollectionNode {
+  id: number;
+  name: string;
+  items: object[];
 
-  const arr = [];
-  for (const item of collection) {
-    arr.push(<Item>{item.Name}</Item>);
+  constructor(id: number, name: string, items: object[]) {
+    this.id = id;
+    this.name = name;
+    this.items = items;
   }
 
-  return <div>{arr}</div>;
+  radius() {
+    return this.items.length;
+  }
+}
+
+export default function Collection() {
+  // Get Collection Data (temp data here but API call later)
+  const collections: CollectionNode[] = [
+    new CollectionNode(0, "Films", [{ name: "film-0" }, { name: "film-1" }]),
+    new CollectionNode(1, "Comics", [{ name: "comic-0" }]),
+    new CollectionNode(2, "Generic", [
+      { name: "gen-0" },
+      { name: "gen-1" },
+      { name: "gen-2" },
+    ]),
+    new CollectionNode(3, "Stamps", [{ name: "stamp-0" }, { name: "stamp-1" }]),
+    new CollectionNode(4, "Coins", [
+      { name: "coin-0" },
+      { name: "coin-1" },
+      { name: "coin-2" },
+    ]),
+    new CollectionNode(5, "Beanie Babies", [
+      { name: "bb-0" },
+      { name: "bb-1" },
+    ]),
+    new CollectionNode(2, "Generic", [
+      { name: "gen-0" },
+      { name: "gen-1" },
+      { name: "gen-2" },
+    ]),
+    new CollectionNode(3, "Stamps", [{ name: "stamp-0" }, { name: "stamp-1" }]),
+    new CollectionNode(4, "Coins", [
+      { name: "coin-0" },
+      { name: "coin-1" },
+      { name: "coin-2" },
+    ]),
+    new CollectionNode(5, "Beanie Babies", [
+      { name: "bb-0" },
+      { name: "bb-1" },
+    ]),
+    new CollectionNode(2, "Generic", [
+      { name: "gen-0" },
+      { name: "gen-1" },
+      { name: "gen-2" },
+    ]),
+    new CollectionNode(3, "Stamps", [{ name: "stamp-0" }, { name: "stamp-1" }]),
+    new CollectionNode(4, "Coins", [
+      { name: "coin-0" },
+      { name: "coin-1" },
+      { name: "coin-2" },
+    ]),
+    new CollectionNode(5, "Beanie Babies", [
+      { name: "bb-0" },
+      { name: "bb-1" },
+    ]),
+  ];
+
+  return <Bubble>{collections}</Bubble>;
 }
