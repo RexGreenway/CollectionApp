@@ -1,19 +1,21 @@
 package storage
 
+import "fmt"
+
 // StorageType defines
 type StorageType string
 
 // StorageManager returns the Storage implementation
-func StorageManager(val StorageType) (Storage, error) {
-	switch val {
-	case InMemory:
-		return NewInMemoryStorage()
+func StorageManager(impl StorageType) (Storage, error) {
+	switch impl {
+	// case InMemory:
+	// 	return newInMemoryStorage()
 
-	// case OS:
-	// 	return NewOSStorage("test-path")
+	case OS:
+		return newOSStorage()
 
 	// Defaults to in memory
 	default:
-		return NewInMemoryStorage()
+		return nil, fmt.Errorf("no such storage implementation %q", impl)
 	}
 }
