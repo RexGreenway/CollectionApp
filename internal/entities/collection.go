@@ -3,8 +3,6 @@ package entities
 import (
 	"errors"
 	"fmt"
-
-	"github.com/RexGreenway/CollectionApp/internal/entities/items"
 )
 
 // Collection defines a container for "collectable" Items with a unique ID and
@@ -17,8 +15,8 @@ type Collection struct {
 	Name string `json:"name"`
 
 	// Contained Item related fields
-	Items    map[string]items.Item `json:"items"`
-	ItemType items.ItemType        `json:"item_type"`
+	Items    map[string]Item `json:"items"`
+	ItemType ItemType        `json:"item_type,omitempty"`
 }
 
 // String implements the stringer interface returning the Collection name.
@@ -27,18 +25,18 @@ func (c Collection) String() string {
 }
 
 // GetItem returns a "collectable" from a collection if it exists.
-func (c Collection) GetItem(itemID string) (items.Item, error) {
+func (c Collection) GetItem(itemID string) (Item, error) {
 	item, ok := c.Items[itemID]
 	if !ok {
 		// TODO: define custom errors.
-		return nil, errors.New("item not found")
+		return Item{}, errors.New("item not found")
 	}
 	return item, nil
 }
 
 // AddItem adds a non-preexisting "collectible" Item to a collection.
-func (c *Collection) AddItem(item items.Item) error {
-	itemID := item.GetID()
+func (c *Collection) AddItem(item Item) error {
+	itemID := item.ID
 	if _, ok := c.Items[itemID]; ok {
 		return errors.New("item already exists")
 	}
