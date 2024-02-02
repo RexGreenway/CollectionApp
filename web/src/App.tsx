@@ -1,9 +1,10 @@
 import Collection from "./components/Collection";
+import Header from "./components/Header";
 
 export default function App() {
   return (
-    <div id="App" className="w-screen h-screen">
-      <h1 className="max-w-fit mx-auto">Collection App</h1>
+    <div>
+      <Header />
       <Collection />
     </div>
   );

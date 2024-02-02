@@ -4,12 +4,16 @@ export class CollectionNode {
   id: number;
   name: string;
   items: object[];
+
+  // To satisfy Node interface
+  group: string;
   radius: number;
 
   constructor(id: number, name: string, items: object[]) {
     this.id = id;
     this.name = name;
     this.items = items;
+    this.group = name;
     this.radius = items.length;
   }
 }
@@ -69,5 +73,9 @@ export default function Collection() {
     ]),
   ];
 
-  return <Bubble>{collections}</Bubble>;
+  return (
+    <div className="h-screen w-screen">
+      <Bubble>{collections}</Bubble>
+    </div>
+  );
 }

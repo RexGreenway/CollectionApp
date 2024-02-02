@@ -1,39 +1,59 @@
-import { useRef, useEffect, useState } from "react";
+import { useRef, useLayoutEffect, useState } from "react";
 
 import * as d3 from "d3";
 import { SimulationNodeDatum } from "d3";
 
+/**
+ * Node is a helper interface for rendering D3 Simulations with React & Typescript.
+ *
+ * This interface extends the D3.js type SimulationNodeDatum that is used by D3
+ * simulations to dynamically update the positions of elements in the DOM. The
+ * new required parameters allow for custom grouping of Nodes & defining how
+ * the radii of Nodes are calculated.
+ */
 interface Node extends SimulationNodeDatum {
+  group: string;
   radius: number;
 }
-
-// Bubble defines a function creating a bubble
-// Change accepted children type to interface such that Bubble accepts
-// generalised node children.
+/**
+ * Bubble defines a component that renders a D3.js powered Bubble Plot given
+ * children elements that satisfy the Node interface.
+ *
+ */
 const Bubble = ({ children }: { children: Node[] }) => {
-  const ref = useRef(null);
+  // divRef is used to reference the plot's container and the changing width
+  const divRef = useRef(null);
+  // svgRef is used to reference the d3 svg itself and is necessary as both
+  // React and D3 both manipulate the DOM.
+  const svgRef = useRef(null);
 
-  const [nodes, SetCol] = useState<Node[]>(children);
+  // Set up nodes of the Bubble Plot
+  const nodes = children.map((c) => ({ ...c }));
+  // const [nodes, SetNodes] = useState<Node[]>(children);
 
-  // D3 BUBBLE
-  const width = 800;
-  const height = 800;
+  // Establish width and height to later set by Ref.
+  const [width, SetWidth] = useState(800);
+  const [height, SetHeight] = useState(800);
 
   const r = 20;
 
-  const Remove = () => {
-    const temp = nodes.map((d) => ({ ...d }));
-    temp.pop();
-    SetCol(temp);
-  };
+  // const Remove = () => {
+  //   const temp = nodes.map((d) => ({ ...d }));
+  //   temp.pop();
+  //   SetCol(temp);
+  // };
 
-  const Add = () => {
-    const temp = nodes.map((d) => ({ ...d }));
-    const addThis = { id: 99, radius: 4 };
-    SetCol(temp.concat(addThis));
-  };
+  // const Add = () => {
+  //   const temp = nodes.map((d) => ({ ...d }));
+  //   const addThis = { group: 99, radius: 4 };
+  //   SetCol(temp.concat(addThis));
+  // };
 
-  useEffect(() => {
+  useLayoutEffect(() => {
+    // Save current element width and height (TODO: Not yet Responsive)
+    SetWidth(divRef.current ? divRef.current.offsetWidth : 800);
+    SetHeight(divRef.current ? divRef.current.offsetHeight : 800);
+
     // Specify the color scale.
     const color = d3.scaleOrdinal(d3.schemeCategory10);
 
@@ -52,19 +72,16 @@ const Bubble = ({ children }: { children: Node[] }) => {
         "charge",
         d3.forceManyBody<Node>().strength((d) => r * d.radius)
       )
-      // Tick function of simulation
       .on("tick", ticked);
 
-    // grab svg by ref (this element) and join with node
+    // Establish SVG sizing and ViewBox
     const svgElement = d3
-      .select(ref.current)
+      .select(svgRef.current)
       .attr("width", width)
       .attr("height", height)
-      .attr("viewBox", [-width / 2, -height / 2, width, height])
-      .attr("style", "max-width: 100%; height: auto;")
-      .attr("style", "border: solid");
+      .attr("viewBox", [-width / 2, -height / 2, width, height]);
 
-    // Append circles to "this" scg element
+    // Join Node Data to simulation as circles
     const node = svgElement
       .selectAll("circle")
       .data(nodes)
@@ -79,23 +96,23 @@ const Bubble = ({ children }: { children: Node[] }) => {
         (update) => update,
         (exit) => exit.transition().duration(500).attr("r", 0).remove()
       )
-      .attr("fill", (d) => color(d.name));
+      .attr("fill", (d) => color(d.group));
 
     // Change node on tick
     function ticked() {
       node.attr("cx", (d) => d.x!).attr("cy", (d) => d.y!);
     }
-  }, [nodes, children]);
+  }, [nodes, children, width, height]);
 
   return (
-    <>
-      <div>
+    <div className="h-full w-full" ref={divRef}>
+      {/* <div>
         <button onClick={Remove}>REMOVE</button>
         <br></br>
         <button onClick={Add}>ADD</button>
-      </div>
-      <svg viewBox="0 0 100 50" ref={ref} />
-    </>
+      </div> */}
+      <svg className="m-auto" ref={svgRef} />
+    </div>
   );
 };
 
