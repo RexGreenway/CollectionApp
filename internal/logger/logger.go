@@ -2,9 +2,14 @@ package logger
 
 import (
 	"fmt"
+	"sync"
 
 	"go.uber.org/zap"
 )
+
+var once sync.Once
+
+var logger *zap.SugaredLogger
 
 type Config struct {
 	Environment string
@@ -12,24 +17,29 @@ type Config struct {
 
 // FromConfig returns sugared logger provided with a configuration.
 func FromConfig(config *Config) (*zap.SugaredLogger, error) {
-	// Establish
-	var logger *zap.Logger
 	var err error
 
-	switch config.Environment {
-	case "dev":
-		logger, err = zap.NewDevelopment()
-		if err != nil {
-			return nil, err
+	// Create and set package scoped logger
+	once.Do(func() {
+		var l *zap.Logger
+
+		switch config.Environment {
+		case "dev":
+			l, err = zap.NewDevelopment()
+
+		case "prod":
+			l, err = zap.NewProduction()
+		default:
+			err = fmt.Errorf("no such environment %q", config.Environment)
 		}
-	case "prod":
-		logger, err = zap.NewProduction()
-		if err != nil {
-			return nil, err
-		}
-	default:
-		return nil, fmt.Errorf("no such environment %q", config.Environment)
+
+		logger = l.Sugar()
+	})
+
+	// Error Handling
+	if err != nil {
+		return nil, err
 	}
 
-	return logger.Sugar(), nil
+	return logger, nil
 }
