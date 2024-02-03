@@ -8,7 +8,6 @@ import (
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
-	"google.golang.org/protobuf/types/known/wrapperspb"
 
 	"github.com/RexGreenway/CollectionApp/internal/genproto"
 )
@@ -17,12 +16,17 @@ type collectionService struct {
 	genproto.UnimplementedCollectionServiceServer
 }
 
+func (s *collectionService) ListCollections(
+	req *genproto.ListCollectionsRequest,
+	stream genproto.CollectionService_ListCollectionsServer,
+) error {
+	return nil
+}
+
 func (s *collectionService) GetCollection(
 	ctx context.Context,
-	collectionID *wrapperspb.StringValue,
+	req *genproto.GetCollectionRequest,
 ) (*genproto.Collection, error) {
-	fmt.Println("hit GetCollection method")
-
 	return &genproto.Collection{
 		Items: []*genproto.Item{
 			{
